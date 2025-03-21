@@ -5,13 +5,11 @@ from tenacity import retry, stop_after_attempt, wait_exponential, retry_if_excep
 from dotenv import load_dotenv
 import os
 
-# Загружаем переменные окружения из .env
-load_dotenv()
 
-# Получаем API-ключ
+load_dotenv()
 API_KEY = os.getenv("API_KEY")
 
-# Настраиваем API
+
 genai.configure(api_key=API_KEY)
 
 @retry(
