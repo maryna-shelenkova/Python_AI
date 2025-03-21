@@ -2,11 +2,17 @@ import google.generativeai as genai
 import time
 import numpy as np
 from tenacity import retry, stop_after_attempt, wait_exponential, retry_if_exception_type
+from dotenv import load_dotenv
+import os
 
+# Загружаем переменные окружения из .env
+load_dotenv()
 
-API_KEY = "AIzaSyCuy7L912TP6S6EriD321xEXxRiPMcN6LA"
+# Получаем API-ключ
+API_KEY = os.getenv("API_KEY")
+
+# Настраиваем API
 genai.configure(api_key=API_KEY)
-
 
 @retry(
     retry=retry_if_exception_type(Exception),
@@ -21,13 +27,11 @@ def get_embedding(text):
         print(f"Ошибка получения эмбеддинга: {e}")
         return None
 
-
 def cosine_similarity(vec1, vec2):
     if vec1 is None or vec2 is None:
         return 0.0
     vec1, vec2 = np.array(vec1), np.array(vec2)
     return np.dot(vec1, vec2) / (np.linalg.norm(vec1) * np.linalg.norm(vec2))
-
 
 text1 = "Привет, как дела?"
 text2 = "Здравствуйте, как у вас настроение?"
@@ -37,7 +41,6 @@ embedding2 = get_embedding(text2)
 
 similarity = cosine_similarity(embedding1, embedding2)
 print(f"Сходство текстов: {similarity:.4f}")
-
 
 def find_most_similar(query, texts):
     query_embedding = get_embedding(query)
@@ -60,3 +63,4 @@ results = find_most_similar(query, texts)
 print("\nТоп похожих текстов:")
 for text, score in results:
     print(f"{text} (сходство: {score:.4f})")
+
